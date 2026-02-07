@@ -48,25 +48,39 @@ shared-notepad/
 
 ### 1. Clone the repository
 
-```bash
 git clone <https://github.com/MeghashreeVenkatesh/shared-notepad/>
 cd shared-notepad
 
+## Install Dependencies
 npm install
 
 ## Setup MongoDB Atlas
  - Create account at https://cloud.mongodb.com
+ - Create a free M0 cluster
+ - Add IP:
+ - Network Access → Allow 0.0.0.0/0
+ - Create DB user:
+ - Username & password
+ - Copy connection string
 
-- Create a free M0 cluster
+## Configure database
+ - In server/server.js:
+  - mongoose.connect("YOUR_MONGODB_CONNECTION_STRING")
+  - Replace with your real string.
 
-Add IP:
+## Run the App
+ - npm run dev
+ - Open: http://localhost:3000
 
-Network Access → Allow 0.0.0.0/0
+## Usage
 
-Create DB user:
+ - Open landing page
+ - Select User 1 or User 2
+ - Type notes
+ - Click Save
+ - Toggle:
+ - Dark Mode
+ - Visibility
+ - Export to PDF if needed
 
-Username & password
-
-Copy connection string
-
-
+ 
