@@ -1,12 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const Note = require("./models/Note");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb+srv://meghauk04_db_user:56RfGRG1GCgupHH9@mongodbcluster.43fp0ji.mongodb.net/?appName=Mongodbcluster")
+mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
 
@@ -35,6 +37,31 @@ app.get("/note/:userId", async (req, res) => {
   res.json(note || {});
 });
 
-app.listen(3000, () => {
+app.get("/test", (req, res) => {
+  res.send("Server OK");
+});
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on("connection", (socket) => {
+  console.log("User connected");
+
+  socket.on("note-change", (data) => {
+    socket.broadcast.emit("note-update", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+
+server.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
+

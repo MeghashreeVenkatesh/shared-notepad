@@ -1,5 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const userId = params.get("u");
+const socket = io();
 
 const note = document.getElementById("note");
 const saveBtn = document.getElementById("saveBtn");
@@ -12,6 +13,32 @@ const exportBtn = document.getElementById("exportBtn");
 if (userTitle) {
   userTitle.textContent = "Notepad for " + userId;
 }
+
+note.addEventListener("input", async () => {
+  if (visibility.checked) {
+    const data = {
+      userId,
+      content: note.value,
+      visible: true
+    };
+
+    // realtime
+    socket.emit("note-change", data);
+
+    // auto-save to DB
+    await fetch("/note/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+  }
+});
+
+socket.on("note-update", (data) => {
+  if (data.userId !== userId) {
+    note.value = data.content;
+  }
+});
 
 async function loadNote() {
   if (!userId) return;
